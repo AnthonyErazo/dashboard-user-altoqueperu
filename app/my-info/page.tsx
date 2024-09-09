@@ -139,7 +139,7 @@ function DocumentUpload() {
     },
   ]);
 
-  const handleDelete = (index) => {
+  const handleDelete = (index:number) => {
     const newFiles = files.filter((_, i) => i !== index);
     setFiles(newFiles);
   };

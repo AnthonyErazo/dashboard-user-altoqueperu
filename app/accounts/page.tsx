@@ -31,7 +31,7 @@ export default function Accounts() {
   const [searchTerm, setSearchTerm] = useState('');
   const [currencyFilter, setCurrencyFilter] = useState('Ambos');
 
-  const handleDelete = (index) => {
+  const handleDelete = (index:number) => {
     const updatedAccounts = accounts.filter((_, i) => i !== index);
     setAccounts(updatedAccounts);
   };

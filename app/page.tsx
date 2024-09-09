@@ -25,14 +25,25 @@ const banks = [
   { label: "BBVA", exchangeRate:  0.03, commission: 0.03, image: "./assets/BBVA.jpg", accountInfo: { lastDigits: '3456', owner: 'Lucía Fernández', currency: 'Dólares' } },
   { label: "Interbank", exchangeRate:  0.02, commission: 0.02, image: "./assets/Interbank.jpg", accountInfo: { lastDigits: '7890', owner: 'Ana Torres', currency: 'Soles' } },
 ];
+interface Bank {
+  label: string;
+  exchangeRate: number;
+  commission: number;
+  image: string;
+  accountInfo: {
+    lastDigits: string;
+    owner: string;
+    currency: string;
+  };
+}
 
 export default function Home() {
   const [amountSent, setAmountSent] = useState(0);
   const [amountReceived, setAmountReceived] = useState(0);
-  const [selectedBank, setSelectedBank] = useState(null);
+  const [selectedBank, setSelectedBank] =useState<Bank | null>(null);
   const steps = ["Cotiza", "Cuentas", "Transfiere"];
   const [currentStep, setCurrentStep] = useState(1);
-  const [receivingBank, setReceivingBank] = useState(null);
+  const [receivingBank, setReceivingBank] = useState<Bank | null>(null);
   const [promoCode, setPromoCode] = useState('');
   const [inputValue, setInputValue] = useState("");
   const [commission, setCommission] = useState(0);
@@ -45,7 +56,7 @@ export default function Home() {
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
-  const handleAmountChange = (e) => {
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value) || 0;
     setAmountSent(value);
     if (selectedBank) {
@@ -56,7 +67,7 @@ export default function Home() {
     }
   };
 
-  const handleBankSelect = (event, newValue) => {
+  const handleBankSelect = (event:React.SyntheticEvent,newValue:Bank|null) => {
     setSelectedBank(newValue);
     if (newValue) {
       const commissionAmount = amountSent * newValue.commission;
@@ -66,7 +77,7 @@ export default function Home() {
     }
   };
 
-  const handleReceivingBankSelect = (event, newValue) => {
+  const handleReceivingBankSelect = (event:React.SyntheticEvent,newValue:Bank|null) => {
     setReceivingBank(newValue);
   };
 

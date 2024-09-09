@@ -51,15 +51,15 @@ export default function Orders() {
         );
     });
 
-    const handleSearchChange = (event) => {
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
     };
 
-    const handleFilterChange = (event) => {
+    const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setFilterStatus(event.target.value);
     };
 
-    const handleSearchTypeChange = (event) => {
+    const handleSearchTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSearchType(event.target.value);
     };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { TiTick } from "react-icons/ti";
 import { FaMoneyBillWave, FaPercent, FaPiggyBank } from "react-icons/fa";
@@ -15,6 +15,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import Image from "next/image";
 
 // Definición de bancos, incluyendo imágenes, tasas de cambio y comisiones
 const banks = [
@@ -32,7 +33,6 @@ export default function Home() {
   const steps = ["Cotiza", "Cuentas", "Transfiere"];
   const [currentStep, setCurrentStep] = useState(1);
   const [receivingBank, setReceivingBank] = useState(null);
-  const [complete, setComplete] = useState(false);
   const [promoCode, setPromoCode] = useState('');
   const [inputValue, setInputValue] = useState("");
   const [commission, setCommission] = useState(0);
@@ -81,7 +81,7 @@ export default function Home() {
               transition={{ duration: 0.5 }}
               className={`flex items-center justify-center w-12 h-12 rounded-full ${currentStep === i + 1 ? "bg-blue-600 text-white" : "bg-gray-300 text-gray-700"}`}
             >
-              {i + 1 < currentStep || complete ? <TiTick size={24} /> : i + 1}
+              {i + 1 < currentStep ? <TiTick size={24} /> : i + 1}
             </motion.div>
             <p className="mt-2 text-sm">{step}</p>
           </div>
@@ -286,7 +286,7 @@ export default function Home() {
                 </Typography>
                 <div className="flex justify-center items-center">
                   {selectedBank ? (
-                    <img
+                    <Image
                       src={selectedBank.image}
                       alt={selectedBank.label}
                       className="max-w-full h-auto object-contain"

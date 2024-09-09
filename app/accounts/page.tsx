@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from 'react';
-import { FaSearch, FaTrashAlt, FaPlus } from 'react-icons/fa';
 import { Box, Typography, Button, TextField, Select, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, InputAdornment } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';

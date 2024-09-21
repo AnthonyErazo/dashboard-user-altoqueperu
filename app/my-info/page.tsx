@@ -1,132 +1,98 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaInfoCircle } from 'react-icons/fa';
-import {
-  Box,
-  Button,
-  Card,
-  Grid,
-  Typography,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  IconButton,
-  CardContent,
-} from "@mui/material";
-import SaveIcon from "@mui/icons-material/Save";
-import { DeleteIcon } from 'lucide-react';
+import Image from 'next/image';
 
 export default function MyInfo() {
+  const [currentDate, setCurrentDate] = useState('');
+
+  useEffect(() => {
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString();
+    setCurrentDate(formattedDate);
+  }, []);
+
   return (
-    <Box p={4} bgcolor="background.default" minHeight="100vh">
-      <Card variant="outlined" sx={{ maxWidth: 1200, mx: "auto", p: 4 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-          <Typography variant="h5" component="h2">
-            Datos Personales
-          </Typography>
-          <Typography variant="body2" color="textSecondary">
-            03/08/2023
-          </Typography>
-        </Box>
+    <div className="p-6 
+    min-h-screen">
+      <div className="bg-white shadow-md rounded-lg mx-auto max-w-6xl p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">Datos Personales</h2>
+          <span className="text-gray-500">{currentDate}</span>
+        </div>
 
-        <Grid container spacing={4}>
-          <Grid item xs={12} >
-            <Grid container spacing={2} mb={3}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Nombre(*)"
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Apellido(*)"
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="E-Mail(*)"
-                  variant="outlined"
-                />
-              </Grid>
-            </Grid>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label className="block text-lg font-medium text-gray-700 mb-2">Nombres(*)</label>
+            <input
+              type="text"
+              className="mt-1 block w-full rounded-lg border border-gray-300 shadow-md p-3 focus:ring-indigo-500 focus:border-indigo-500 text-base"
+              placeholder="Ingresa tus nombres"
+            />
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-gray-700 mb-2">Apellidos(*)</label>
+            <input
+              type="text"
+              className="mt-1 block w-full rounded-lg border border-gray-300 shadow-md p-3 focus:ring-indigo-500 focus:border-indigo-500 text-base"
+              placeholder="Ingresa tus apellidos"
+            />
+          </div>
+          <div className="col-span-1 md:col-span-2">
+            <label className="block text-lg font-medium text-gray-700 mb-2">E-Mail(*)</label>
+            <input
+              type="email"
+              className="mt-1 block w-full rounded-lg border border-gray-300 shadow-md p-3 focus:ring-indigo-500 focus:border-indigo-500 text-base"
+              placeholder="Ingresa tu email"
+            />
+          </div>
+          <div className="col-span-1 md:col-span-2">
+            <label className="block text-lg font-medium text-gray-700 mb-2">Teléfono(*)</label>
+            <input
+              type="tel"
+              className="mt-1 block w-full rounded-lg border border-gray-300 shadow-md p-3 focus:ring-indigo-500 focus:border-indigo-500 text-base"
+              placeholder="Ingresa tu teléfono"
+            />
+          </div>
+        </div>
 
-            <Grid container spacing={2} mb={3}>
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth variant="outlined">
-                  <InputLabel>Tipo de Documento(*)</InputLabel>
-                  <Select label="Tipo de Documento(*)">
-                    <MenuItem value="DNI">DNI</MenuItem>
-                    <MenuItem value="Pasaporte">Pasaporte</MenuItem>
-                    <MenuItem value="CE">CE</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="N° Documento(*)"
-                  variant="outlined"
-                />
-              </Grid>
-            </Grid>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label className="block text-lg font-medium text-gray-700 mb-2">Tipo de Documento(*)</label>
+            <input
+              type="text"
+              value="DNI"
+              disabled
+              className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-100 shadow-md p-3 text-base"
+            />
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-gray-700 mb-2">N° Documento(*)</label>
+            <input
+              type="text"
+              className="mt-1 block w-full rounded-lg border border-gray-300 shadow-md p-3 focus:ring-indigo-500 focus:border-indigo-500 text-base"
+              placeholder="Ingresa tu número de documento"
+            />
+          </div>
+        </div>
 
-            <Grid container spacing={2} mb={3}>
-              <Grid item xs={12} sm={3}>
-                <FormControl fullWidth variant="outlined">
-                  <InputLabel>País(*)</InputLabel>
-                  <Select label="País(*)">
-                    <MenuItem value="Peru">Peru</MenuItem>
-                    <MenuItem value="Otro">Otro</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={3}>
-                <TextField
-                  fullWidth
-                  label="Departamento(*)"
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12} sm={3}>
-                <TextField
-                  fullWidth
-                  label="Provincia(*)"
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12} sm={3}>
-                <TextField
-                  fullWidth
-                  label="Distrito(*)"
-                  variant="outlined"
-                />
-              </Grid>
-            </Grid>
-
-            <Box display="flex" justifyContent="flex-end" gap={2}>
-              <Button variant="contained" color="primary" startIcon={<SaveIcon />}>
-                Guardar
-              </Button>
-            </Box>
-          </Grid>
-        </Grid>
-      </Card>
+        <div className="flex justify-end mt-4">
+          <button
+            className="bg-indigo-600 text-white py-3 px-6 rounded-lg text-lg hover:bg-indigo-700 shadow-md"
+          >
+            Guardar
+          </button>
+        </div>
+      </div>
 
       <DocumentUpload />
-    </Box>
+    </div>
   );
 }
 
 function DocumentUpload() {
-  const [files, setFiles] = useState([
+  const [files] = useState([
     {
       name: "DNI_anverso.jpg",
       size: "56.2 KB",
@@ -139,53 +105,36 @@ function DocumentUpload() {
     },
   ]);
 
-  const handleDelete = (index:number) => {
-    const newFiles = files.filter((_, i) => i !== index);
-    setFiles(newFiles);
-  };
-
   return (
-    <Box mt={4}>
-      <Card variant="outlined" sx={{ maxWidth: 1200, mx: "auto", p: 4 }}>
-        <Typography variant="h6" mb={2}>
-          Documento de Identidad (*)
-        </Typography>
+    <div className="mt-8">
+      <div className="bg-white shadow-md rounded-lg mx-auto max-w-6xl p-6">
+        <h3 className="text-xl font-semibold mb-4">Documento de Identidad (*)</h3>
 
-        <Box display="flex" alignItems="start" gap={2} p={2} bgcolor="blue.50" borderRadius="8px" mb={4}>
-          <FaInfoCircle color="blue" />
-          <Typography variant="body2" color="blue">
-            Cargue las imágenes del anverso y reverso del DNI, en formato jpg/jpeg con un peso menor a 500Kb.
-          </Typography>
-        </Box>
+        <div className="flex items-start gap-4 p-4 bg-blue-50 border border-blue-200 rounded-md mb-6">
+          <FaInfoCircle className="text-blue-500" />
+          <p className="text-sm text-blue-600">
+            Imágenes del anverso y reverso del DNI, en formato jpg/jpeg con un peso menor a 500Kb.
+          </p>
+        </div>
 
-        <Grid container spacing={2}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {files.map((file, index) => (
-            <Grid item xs={12} key={index}>
-              <Card variant="outlined">
-                <CardContent>
-                  <Box display="flex" justifyContent="space-between" alignItems="center">
-                    <Box>
-                      <Typography variant="body2" noWrap>
-                        {file.name}
-                      </Typography>
-                      <Typography variant="caption" color="textSecondary">
-                        {file.size}
-                      </Typography>
-                    </Box>
-                    <IconButton
-                      aria-label="delete"
-                      color="error"
-                      onClick={() => handleDelete(index)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
+            <div key={index} className="bg-gray-100 p-3 rounded-lg overflow-hidden shadow-md">
+              <Image
+                src={file.imageUrl}
+                alt={file.name}
+                width={300}
+                height={200}
+                className="w-full h-auto object-contain"
+              />
+              <div className="p-4">
+                <h4 className="font-medium text-sm truncate">{file.name}</h4>
+                <p className="text-xs text-gray-500">{file.size}</p>
+              </div>
+            </div>
           ))}
-        </Grid>
-      </Card>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 }

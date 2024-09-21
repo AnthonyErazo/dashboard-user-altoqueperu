@@ -7,12 +7,13 @@ import { useState } from "react";
 export default function Orders() {
     const [searchTerm, setSearchTerm] = useState("");
     const [filterStatus, setFilterStatus] = useState("Todos");
-    const [searchType, setSearchType] = useState("Cursos");
+    const [searchType, setSearchType] = useState("Todos");
+    const [submittedSearch, setSubmittedSearch] = useState("");
 
     const orders = [
         {
             id: "2138261832I9361",
-            status: "complete",
+            status: "Completado",
             bank: "BCP",
             date: "10/08/2024",
             envio: 1000,
@@ -20,7 +21,7 @@ export default function Orders() {
         },
         {
             id: "2138261832I9361",
-            status: "in-progress",
+            status: "En progreso",
             bank: "BCP",
             date: "10/08/2024",
             envio: 1000,
@@ -28,7 +29,7 @@ export default function Orders() {
         },
         {
             id: "2138261832I9361",
-            status: "pending",
+            status: "Pendiente",
             bank: "BCP",
             date: "10/08/2024",
             envio: 1000,
@@ -36,7 +37,7 @@ export default function Orders() {
         },
         {
             id: "2138261832I9361",
-            status: "cancelled",
+            status: "Cancelado",
             bank: "BCP",
             date: "10/08/2024",
             envio: 1000,
@@ -47,7 +48,7 @@ export default function Orders() {
     const filteredOrders = orders.filter((order) => {
         return (
             (filterStatus === "Todos" || order.status === filterStatus) &&
-            (order.id.includes(searchTerm) || searchTerm === "")
+            (order.id.includes(submittedSearch) || submittedSearch === "")
         );
     });
 
@@ -56,39 +57,48 @@ export default function Orders() {
     };
 
     const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        handleClearSearch();
+        setSearchType(event.target.value);
         setFilterStatus(event.target.value);
     };
 
-    const handleSearchTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setSearchType(event.target.value);
+    const handleSearchSubmit = () => {
+        setSubmittedSearch(searchTerm);
+    };
+
+    const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter") {
+            handleSearchSubmit();
+        }
     };
 
     const handleClearSearch = () => {
         setSearchTerm("");
+        setSubmittedSearch("");
     };
 
     return (
         <div className="p-6">
             <h1 className="text-2xl mb-6">Mis Órdenes</h1>
 
-            {/* Custom Search Section */}
             <label className="mt-4 block text-sm font-medium text-gray-900 text-center sm:text-start">
                 Buscar por
             </label>
             <div className="flex items-center flex-col sm:flex-row mb-4">
-                {/* Select Type */}
                 <div className="w-2/5">
                     <select
-                        value={searchType}
-                        onChange={handleSearchTypeChange}
-                        className="bg-gray-50 w-full rounded-lg border p-2 border-gray-300 text-gray-700 text-sm sm:text-sm focus:outline-none"
+                        value={filterStatus}
+                        onChange={handleFilterChange}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5 focus:outline-none focus:ring-1 focus:border-indigo-500 focus:ring-indigo-500"
                     >
-                        <option value="Cursos">Cursos</option>
-                        <option value="Profesores">Profesores</option>
+                        <option value="Todos">Todos</option>
+                        <option value="Completado">Completado</option>
+                        <option value="En progreso">En progreso</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Cancelado">Cancelado</option>
                     </select>
                 </div>
 
-                {/* Search Input */}
                 <div className="flex ml-2 items-center mb-4 mt-4 w-full">
                     <div className="relative w-full">
                         <div className="absolute inset-y-0 start-0 flex items-center pl-3 pointer-events-none">
@@ -112,13 +122,14 @@ export default function Orders() {
                             type="text"
                             value={searchTerm}
                             onChange={handleSearchChange}
+                            onKeyDown={handleKeyPress} // Detecta cuando se presiona Enter
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full pl-10 p-2.5 focus:outline-none focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm focus:ring-1"
                             placeholder={`Buscar ${searchType}`}
                             required
                         />
                     </div>
                     <button
-                        onClick={handleClearSearch}
+                        onClick={handleSearchSubmit} // Llama a la búsqueda cuando se presiona el botón
                         className="p-2.5 ml-2 text-sm font-medium text-white bg-indigo-700 rounded-lg border border-indigo-700 hover:bg-indigo-800 focus:outline-none"
                     >
                         <svg
@@ -141,62 +152,43 @@ export default function Orders() {
                 </div>
             </div>
 
-            {/* Filter by Order Status */}
-            <div className="flex justify-between mb-4">
-                <select
-                    value={filterStatus}
-                    onChange={handleFilterChange}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5 focus:outline-none focus:ring-1 focus:border-indigo-500 focus:ring-indigo-500"
-                >
-                    <option value="Todos">Todos</option>
-                    <option value="complete">Completado</option>
-                    <option value="in-progress">En progreso</option>
-                    <option value="pending">Pendiente</option>
-                    <option value="cancelled">Cancelado</option>
-                </select>
+            <div>
+                <ul className="space-y-4">
+                    {filteredOrders.length > 0 ? (
+                        filteredOrders.map((order, index) => (
+                            <li key={index} className="flex items-center gap-4 border-b pb-4">
+                                <div
+                                    className={`h-10 w-10 rounded-full flex items-center justify-center ${order.status === "Completado"
+                                            ? "bg-green-500"
+                                            : order.status === "En progreso"
+                                                ? "bg-blue-500"
+                                                : order.status === "Pendiente"
+                                                    ? "bg-yellow-500"
+                                                    : "bg-red-500"
+                                        }`}
+                                >
+                                    {order.status === "Completado" && <Check color="green" />}
+                                    {order.status === "En progreso" && <Clock color="blue" />}
+                                    {order.status === "Pendiente" && <TriangleAlert color="yellow" />}
+                                    {order.status === "Cancelado" && <CircleXIcon color="red" />}
+                                </div>
+                                <div className="flex-grow">
+                                    <p className="font-bold">Nº {order.id}</p>
+                                    <p className="text-gray-500">{order.bank}</p>
+                                    <p className="text-gray-500">{order.date}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm">Envío: S/.{order.envio}</p>
+                                    <p className="text-sm">Recepción: S/.{order.recepcion}</p>
+                                </div>
+                            </li>
+                        ))
+                    ) : (
+                        <Typography>No se encontraron órdenes.</Typography>
+                    )}
+                </ul>
+                
             </div>
-
-            {/* Orders List */}
-            <ul className="space-y-4">
-                {filteredOrders.length > 0 ? (
-                    filteredOrders.map((order, index) => (
-                        <li key={index} className="flex items-center gap-4 border-b pb-4">
-                            {/* Status Icon */}
-                            <div
-                                className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                                    order.status === "complete"
-                                        ? "bg-green-500"
-                                        : order.status === "in-progress"
-                                        ? "bg-blue-500"
-                                        : order.status === "pending"
-                                        ? "bg-yellow-500"
-                                        : "bg-red-500"
-                                }`}
-                            >
-                                {order.status === "complete" && <Check color="green" />}
-                                {order.status === "in-progress" && <Clock color="blue" />}
-                                {order.status === "pending" && <TriangleAlert color="yellow" />}
-                                {order.status === "cancelled" && <CircleXIcon color="red" />}
-                            </div>
-
-                            {/* Order Information */}
-                            <div className="flex-grow">
-                                <p className="font-bold">Nº {order.id}</p>
-                                <p className="text-gray-500">{order.bank}</p>
-                                <p className="text-gray-500">{order.date}</p>
-                            </div>
-
-                            {/* Prices */}
-                            <div>
-                                <p className="text-sm">Envío: S/.{order.envio}</p>
-                                <p className="text-sm">Recepción: S/.{order.recepcion}</p>
-                            </div>
-                        </li>
-                    ))
-                ) : (
-                    <Typography>No se encontraron órdenes.</Typography>
-                )}
-            </ul>
         </div>
     );
 }

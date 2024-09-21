@@ -1,7 +1,7 @@
 "use client";
 
 import { useContext, createContext, ReactNode, useState, useEffect } from "react";
-import { ChevronFirst, ChevronLast, MoreVertical } from "lucide-react";
+import { ChevronFirst, ChevronLast } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 

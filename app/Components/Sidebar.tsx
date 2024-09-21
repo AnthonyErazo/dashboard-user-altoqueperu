@@ -1,8 +1,9 @@
 "use client";
 
-import { useContext, createContext, ReactNode } from "react";
+import { useContext, createContext, ReactNode, useState, useEffect } from "react";
 import { ChevronFirst, ChevronLast, MoreVertical } from "lucide-react";
-import { usePathname,useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface SidebarContextProps {
     expanded: boolean;
@@ -15,49 +16,71 @@ interface SidebarProps {
     children: ReactNode;
     expanded: boolean;
     setExpanded: (expanded: boolean) => void;
-  }
+}
 
 export default function Sidebar({ children, expanded, setExpanded }: SidebarProps) {
+    const [isScreenSmall, setIsScreenSmall] = useState(false);
+    const userName = "John Doe";
+    const initials = userName.split(" ").map((name) => name[0]).join("");
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth <= 1050) {
+                setIsScreenSmall(true);
+                setExpanded(false);
+            } else {
+                setIsScreenSmall(false);
+            }
+        };
+
+        window.addEventListener("resize", handleResize);
+        handleResize(); 
+
+        return () => window.removeEventListener("resize", handleResize);
+    }, [setExpanded]);
 
     return (
         <div className="relative">
-            <aside className="h-[95vh] fixed shadow-xl top-1/2 rounded-3xl -translate-y-1/2 transform left-5">
-                <nav className="h-full flex flex-col bg-white border-r shadow-sm rounded-3xl">
-                    <div className="p-4 pb-2 flex justify-between items-center">
-                        <img
+            <aside className="md:h-[95vh] max-md:w-[100%] fixed md:shadow-xl md:top-1/2 max-md:bottom-0 md:p-0 md:rounded-3xl md:-translate-y-1/2 transform md:left-5 z-10">
+                <nav className="h-full flex flex-col bg-white md:border-r md:shadow-sm md:rounded-3xl">
+                    <div className="p-4 pb-2 flex justify-between items-center max-md:hidden">
+                        <Image
                             src="https://static.wixstatic.com/media/4ebc68_ab41a22907914fcc878695033a717c78~mv2.png/v1/crop/x_82,y_325,w_1507,h_250/fill/w_534,h_89,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/web%20portada.png"
+                            width={534}
+                            height={89}
                             className={`overflow-hidden transition-all ${expanded ? "w-40" : "w-0"
                                 }`}
-                            alt=""
+                            alt="logo"
                         />
-                        <button
-                            onClick={() => setExpanded(!expanded)}
-                            className="p-1.5 rounded-lg bg-gray-50 hover:bg-gray-100"
-                        >
-                            {expanded ? <ChevronFirst /> : <ChevronLast />}
-                        </button>
+                        {!isScreenSmall && (
+                            <button
+                                onClick={() => setExpanded(!expanded)}
+                                className="p-1.5 rounded-lg bg-gray-50 hover:bg-gray-100"
+                            >
+                                {expanded ? <ChevronFirst /> : <ChevronLast />}
+                            </button>
+                        )}
                     </div>
                     <SidebarContext.Provider value={{ expanded, setExpanded }}>
-                        <ul className="flex-1 px-3">{children}</ul>
+                        <ul className="md:flex-1 px-3 max-md:flex max-md:justify-evenly">{children}</ul>
                     </SidebarContext.Provider>
-                    <div className="border-t flex p-3">
-                        <img
-                            src="https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true"
-                            alt=""
-                            className="w-10 h-10 rounded-md"
-                        />
+                    <div className="border-t flex p-3 max-md:hidden">
+                        <div
+                            className="w-10 h-10 flex items-center justify-center rounded-lg bg-[#c7d2fe] text-[#3730a3] font-bold text-lg"
+                        >
+                            {initials}
+                        </div>
                         <div
                             className={`
                                 flex justify-between items-center
                                 overflow-hidden transition-all ${expanded ? "w-52 ml-3" : "w-0"
-                                                }
+                                }
                             `}
                         >
                             <div className="leading-4">
-                                <h4 className="font-semibold">John Doe</h4>
+                                <h4 className="font-semibold">{userName}</h4>
                                 <span className="text-xs text-gray-600">johndoe@gmail.com</span>
                             </div>
-                            <MoreVertical size={20} />
                         </div>
                     </div>
                 </nav>
@@ -96,7 +119,7 @@ export function SidebarItem({
     };
     return (
         <li
-        onClick={handleNavigation}
+            onClick={handleNavigation}
             className={`
             relative flex items-center py-2 px-3 my-1
             font-medium rounded-md cursor-pointer
@@ -124,10 +147,10 @@ export function SidebarItem({
             {!expanded && (
                 <div
                     className={`
-            absolute left-full rounded-md px-2 py-1 ml-6
+            absolute md:left-full max-md:bottom-12 rounded-md px-2 py-1 md:ml-6
             bg-indigo-100 text-indigo-800 text-sm
             invisible opacity-20 -translate-x-3 transition-all
-            group-hover:visible group-hover:opacity-100 group-hover:translate-x-0
+            group-hover:visible group-hover:opacity-100 ${text==="Datos"?"max-md:group-hover:-translate-x-4":"max-md:group-hover:-translate-x-6"} md:group-hover:-translate-x-0
         `}
                 >
                     {text}

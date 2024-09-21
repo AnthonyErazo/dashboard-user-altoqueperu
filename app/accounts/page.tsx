@@ -53,9 +53,8 @@ export default function Accounts() {
   });
 
   return (
-    <Box p={4} bgcolor="background.default" minHeight="100vh">
+    <Box p={4} bgcolor="background.default" minHeight="100vh" width="100%">
       <Box maxWidth="lg" mx="auto" bgcolor="white" p={4} borderRadius={2} boxShadow={3}>
-        {/* Header */}
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
           <Typography variant="h4" color="primary">
             MIS CUENTAS BANCARIAS
@@ -70,9 +69,7 @@ export default function Accounts() {
           </Button>
         </Box>
 
-        {/* Filtros */}
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={4} flexDirection={{ xs: 'column', sm: 'row' }} gap={2}>
-          {/* Buscar por cuenta o titular */}
           <TextField
             label="Buscar cuenta o titular"
             variant="outlined"
@@ -88,7 +85,6 @@ export default function Accounts() {
             sx={{ width: { xs: '100%', sm: '45%' } }}
           />
 
-          {/* Filtro por tipo de moneda */}
           <Box display="flex" alignItems="center">
             <Typography variant="subtitle1" color="primary" mr={2}>
               Seleccione tipo de Moneda:
@@ -106,8 +102,7 @@ export default function Accounts() {
           </Box>
         </Box>
 
-        {/* Tabla de cuentas */}
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
           <Table>
             <TableHead>
               <TableRow>

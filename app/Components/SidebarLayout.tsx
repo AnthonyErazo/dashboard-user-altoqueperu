@@ -9,7 +9,7 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
     const [expanded, setExpanded] = useState(true);
 
     return (
-        <div className="flex">
+        <div className="flex bg-white">
             <Sidebar expanded={expanded} setExpanded={setExpanded}>
                 <SidebarItem icon={<FaExchangeAlt size={20} />} text="Cambiar" route="/" />
                 <SidebarItem icon={<FaListAlt size={20} />} text="Ordenes" route="/orders" />
@@ -18,7 +18,7 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
                 <SidebarItem icon={<LogOut  size={20} />} text="Logout" route="https://google.com" />
             </Sidebar>
             <div
-                className={`flex-1 max-md:mb-24 transition-all duration-500 ${expanded ? "md:ml-[21rem]" : "md:ml-[7rem]"
+                className={`flex-1 bg-white max-md:mb-24 transition-all duration-500 ${expanded ? "md:ml-[21rem]" : "md:ml-[7rem]"
                     }`}
             >
                 {children}

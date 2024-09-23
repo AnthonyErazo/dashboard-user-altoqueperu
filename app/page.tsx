@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { TiTick } from "react-icons/ti";
 import { FaMoneyBillWave, FaPercent, FaPiggyBank } from "react-icons/fa";
@@ -11,41 +11,39 @@ import {
   FormControl,
   InputAdornment,
   InputLabel,
+  MenuItem,
   OutlinedInput,
+  Select,
+  SelectChangeEvent,
   TextField,
   Typography,
 } from "@mui/material";
 import Image from "next/image";
 
 const banks = [
-  { label: "BCP", exchangeRate: 0.03, commission: 0.03, image: "/assets/BCP.jpg", accountInfo: { lastDigits: '1234', owner: 'Juan Pérez', currency: 'Soles' } },
-  { label: "Scotiabank", exchangeRate: 0.04, commission: 0.04, image: "/assets/Scotiabank.jpg", accountInfo: { lastDigits: '5678', owner: 'María González', currency: 'Dólares' } },
-  { label: "BanBif", exchangeRate: 0.02, commission: 0.02, image: "/assets/BanBif.jpg", accountInfo: { lastDigits: '9012', owner: 'Carlos Ruiz', currency: 'Soles' } },
-  { label: "BBVA", exchangeRate: 0.03, commission: 0.03, image: "/assets/BBVA.jpg", accountInfo: { lastDigits: '3456', owner: 'Lucía Fernández', currency: 'Dólares' } },
-  { label: "Interbank", exchangeRate: 0.02, commission: 0.02, image: "/assets/Interbank.jpg", accountInfo: { lastDigits: '7890', owner: 'Ana Torres', currency: 'Soles' } },
+  { label: "BCP", image: "/assets/BCP.jpg" },
+  { label: "Scotiabank", image: "/assets/Scotiabank.jpg" },
+  { label: "BanBif",  image: "/assets/BanBif.jpg" },
+  { label: "BBVA", image: "/assets/BBVA.jpg" },
+  { label: "Interbank", image: "/assets/Interbank.jpg" },
 ];
 interface Bank {
   label: string;
-  exchangeRate: number;
-  commission: number;
   image: string;
-  accountInfo: {
-    lastDigits: string;
-    owner: string;
-    currency: string;
-  };
 }
 
 export default function Home() {
   const [amountSent, setAmountSent] = useState(0);
   const [amountReceived, setAmountReceived] = useState(0);
-  const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
-  const steps = ["Cotiza", "Cuentas", "Transfiere"];
-  const [currentStep, setCurrentStep] = useState(1);
-  const [receivingBank, setReceivingBank] = useState<Bank | null>(null);
+  const [selectedBank, setSelectedBank] = useState<Bank>(banks[0]);
   const [promoCode, setPromoCode] = useState('');
-  const [inputValue, setInputValue] = useState("");
   const [commission, setCommission] = useState(0);
+  const [currentStep, setCurrentStep] = useState(1);
+  const steps = ["Cotiza", "Cuentas", "Transfiere"];
+
+  useEffect(() => {
+    handleDiscount(); // Se actualiza automáticamente el cálculo cuando cambia amountSent
+  }, [amountSent, promoCode, selectedBank]);
 
   const handleNext = () => {
     if (currentStep < 3) setCurrentStep(currentStep + 1);
@@ -55,29 +53,45 @@ export default function Home() {
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
+  // Calcula los descuentos y comisiones
+  const handleDiscount = () => {
+    let commissionAmount = 0;
+    let receivedAmount = 0;
+
+    if (["Beto25", "Luis25", "Jack25", "Richi25"].includes(promoCode) && selectedBank) {
+      if (["BCP", "Interbank", "BBVA"].includes(selectedBank.label)) {
+        commissionAmount = amountSent > 4000 ? amountSent * 0.0025 : 10;
+      } else if (["Scotiabank", "BanBif"].includes(selectedBank.label)) {
+        commissionAmount = amountSent > 3500 ? amountSent * 0.0035 : 12;
+      }
+    } else if (promoCode === 'Jonathan30' && selectedBank) {
+      if (["BCP", "Interbank", "BBVA"].includes(selectedBank.label)) {
+        commissionAmount = amountSent > 4000 ? amountSent * 0.003 : 10;
+      } else if (["Scotiabank", "BanBif"].includes(selectedBank.label)) {
+        commissionAmount = amountSent > 3500 ? amountSent * 0.004 : 12;
+      }
+    } else {
+      commissionAmount = amountSent > 2000 ? amountSent * 0.005 : 10;
+    }
+
+    receivedAmount = amountSent - commissionAmount;
+    setAmountReceived(receivedAmount);
+    setCommission(commissionAmount);
+  };
+
+  // Maneja los cambios en el monto enviado
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value) || 0;
     setAmountSent(value);
-    if (selectedBank) {
-      const commissionAmount = value * selectedBank.commission;
-      const receivedAmount = value - commissionAmount;
-      setAmountReceived(receivedAmount);
-      setCommission(commissionAmount);
-    }
   };
 
-  const handleBankSelect = (event: React.SyntheticEvent, newValue: Bank | null) => {
-    setSelectedBank(newValue);
+  // Maneja la selección del banco
+  const handleBankSelect = (event: SelectChangeEvent<string>) => {
+    const selectedLabel = event.target.value;
+    const newValue = banks.find((bank) => bank.label === selectedLabel);
     if (newValue) {
-      const commissionAmount = amountSent * newValue.commission;
-      const receivedAmount = amountSent - commissionAmount;
-      setAmountReceived(receivedAmount);
-      setCommission(commissionAmount);
+      setSelectedBank(newValue);
     }
-  };
-
-  const handleReceivingBankSelect = (event: React.SyntheticEvent, newValue: Bank | null) => {
-    setReceivingBank(newValue);
   };
 
   return (
@@ -132,7 +146,7 @@ export default function Home() {
 
       <motion.div
         key={currentStep}
-        initial={{ opacity: 0}}
+        initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
         className="flex flex-col items-center justify-center h-full w-full px-4"
@@ -182,24 +196,18 @@ export default function Home() {
                   fullWidth
                   className="mb-6"
                 />
-                <Autocomplete
-                  value={selectedBank}
-                  onChange={handleBankSelect}
-                  inputValue={inputValue}
-                  onInputChange={(event, newInputValue) => {
-                    setInputValue(newInputValue);
-                  }}
-                  disablePortal
-                  options={banks}
-                  getOptionLabel={(option) => option.label}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Selecciona un banco"
-                      className="bg-gray-100"
-                    />
-                  )}
-                />
+                <FormControl className="relative mb-6" fullWidth>
+                  <Select
+                    value={selectedBank.label}
+                    onChange={handleBankSelect}
+                    displayEmpty
+                    inputProps={{ 'aria-label': 'Without label' }}
+                  >
+                    {banks.map((bank) => {
+                      return <MenuItem value={bank.label}>{bank.label}</MenuItem>
+                    })}
+                  </Select>
+                </FormControl>
               </motion.div>
               <motion.div
                 className="w-full md:w-1/3 bg-white p-6 rounded-lg shadow-lg"
@@ -280,7 +288,7 @@ export default function Home() {
                   Selecciona el Banco Receptor
                 </Typography>
 
-                <Autocomplete
+                {/* <Autocomplete
                   value={receivingBank}
                   onChange={handleReceivingBankSelect}
                   inputValue={receivingBank ? receivingBank.label : ""}
@@ -294,9 +302,9 @@ export default function Home() {
                       className="bg-gray-100"
                     />
                   )}
-                />
+                /> */}
 
-                {receivingBank && (
+                {/* {receivingBank && (
                   <Box mt={4} className="bg-blue-50 p-4 rounded-lg">
                     <Typography variant="body1" className="mb-2">
                       <strong>Últimos 4 dígitos:</strong> {receivingBank.accountInfo.lastDigits}
@@ -308,7 +316,7 @@ export default function Home() {
                       <strong>Moneda:</strong> {receivingBank.accountInfo.currency}
                     </Typography>
                   </Box>
-                )}
+                )} */}
               </motion.div>
             </div>
           )}

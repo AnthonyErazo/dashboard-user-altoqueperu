@@ -1,7 +1,7 @@
 import React from 'react';
 
 // Propiedades del componente StepIndicator
-const StepIndicator = ({ step, currentStep, onStepClick }) => {
+const StepIndicator = ({  currentStep, onStepClick }) => {
   const steps = [1, 2, 3];
   
   return (

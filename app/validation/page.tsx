@@ -40,7 +40,7 @@ export default function Home() {
     <div className="min-h-screen p-8 pb-20">
       <h1 className="text-2xl font-bold text-center mb-8">Validación de Usuario - AltoquePerú</h1>
       
-      <StepIndicator step={step} currentStep={step} onStepClick={handleStepClick} />
+      <StepIndicator currentStep={step} onStepClick={handleStepClick} />
       
       {step === 1 && <Step1DNI nextStep={nextStep} onCompletion={handleDNICompletion} initialData={dniData} />}
       {step === 2 && <Step2Profile nextStep={nextStep} prevStep={prevStep} onCompletion={handleProfileCompletion} initialData={profileData} />}

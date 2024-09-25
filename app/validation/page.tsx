@@ -6,7 +6,6 @@ import Step2Profile from './components/Step2Profile';
 import Step3Bank from './components/Step3Bank';
 import StepIndicator from './components/StepIndicator';
 
-// Tipos para los datos de cada paso
 interface DNIData {
   dniFront: string | null;
   dniBack: string | null;

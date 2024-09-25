@@ -41,7 +41,7 @@ export default function Home() {
   const steps = ["Cotiza", "Cuentas", "Transfiere"];
 
   useEffect(() => {
-    handleDiscount(); // Se actualiza automáticamente el cálculo cuando cambia amountSent
+    handleDiscount();
   }, [amountSent, promoCode, selectedBank]);
 
   const handleNext = () => {
@@ -52,7 +52,6 @@ export default function Home() {
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
-  // Calcula los descuentos y comisiones
   const handleDiscount = () => {
     let commissionAmount = 0;
     let receivedAmount = 0;
@@ -78,13 +77,11 @@ export default function Home() {
     setCommission(commissionAmount);
   };
 
-  // Maneja los cambios en el monto enviado
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value) || 0;
     setAmountSent(value);
   };
 
-  // Maneja la selección del banco
   const handleBankSelect = (event: SelectChangeEvent<string>) => {
     const selectedLabel = event.target.value;
     const newValue = banks.find((bank) => bank.label === selectedLabel);
@@ -202,8 +199,8 @@ export default function Home() {
                     displayEmpty
                     inputProps={{ 'aria-label': 'Without label' }}
                   >
-                    {banks.map((bank) => {
-                      return <MenuItem value={bank.label}>{bank.label}</MenuItem>
+                    {banks.map((bank,index) => {
+                      return <MenuItem key={index} value={bank.label}>{bank.label}</MenuItem>
                     })}
                   </Select>
                 </FormControl>
@@ -287,40 +284,10 @@ export default function Home() {
                   Selecciona el Banco Receptor
                 </Typography>
 
-                {/* <Autocomplete
-                  value={receivingBank}
-                  onChange={handleReceivingBankSelect}
-                  inputValue={receivingBank ? receivingBank.label : ""}
-                  disablePortal
-                  options={banks}
-                  getOptionLabel={(option) => option.label}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Selecciona un banco"
-                      className="bg-gray-100"
-                    />
-                  )}
-                /> */}
-
-                {/* {receivingBank && (
-                  <Box mt={4} className="bg-blue-50 p-4 rounded-lg">
-                    <Typography variant="body1" className="mb-2">
-                      <strong>Últimos 4 dígitos:</strong> {receivingBank.accountInfo.lastDigits}
-                    </Typography>
-                    <Typography variant="body1" className="mb-2">
-                      <strong>Titular:</strong> {receivingBank.accountInfo.owner}
-                    </Typography>
-                    <Typography variant="body1" className="mb-2">
-                      <strong>Moneda:</strong> {receivingBank.accountInfo.currency}
-                    </Typography>
-                  </Box>
-                )} */}
               </motion.div>
             </div>
           )}
 
-          {/* Step 3: Transfiere */}
           {currentStep === 3 && (
             <div className="flex flex-col xl:flex-row max-xl:items-center p-6 gap-6">
               <motion.div

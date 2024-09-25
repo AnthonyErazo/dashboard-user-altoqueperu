@@ -1,4 +1,4 @@
-"use client"; // Marcado como Client Component
+"use client";
 
 import { useState } from "react";
 import Sidebar, { SidebarItem } from "./Sidebar";

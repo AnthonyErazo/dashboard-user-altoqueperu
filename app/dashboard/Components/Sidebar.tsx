@@ -48,6 +48,7 @@ export default function Sidebar({ children, expanded, setExpanded }: SidebarProp
                             src="https://static.wixstatic.com/media/4ebc68_ab41a22907914fcc878695033a717c78~mv2.png/v1/crop/x_82,y_325,w_1507,h_250/fill/w_534,h_89,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/web%20portada.png"
                             width={534}
                             height={89}
+                            priority
                             className={`overflow-hidden transition-all ${expanded ? "w-40" : "w-0"
                                 }`}
                             alt="logo"

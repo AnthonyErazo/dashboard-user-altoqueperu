@@ -11,10 +11,10 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
     return (
         <div className="flex bg-white">
             <Sidebar expanded={expanded} setExpanded={setExpanded}>
-                <SidebarItem icon={<FaExchangeAlt size={20} />} text="Cambiar" route="/" />
-                <SidebarItem icon={<FaListAlt size={20} />} text="Ordenes" route="/orders" />
-                <SidebarItem icon={<FaWallet  size={20} />} text="Cuentas" route="/accounts" />
-                <SidebarItem icon={<FaUser  size={20} />} text="Datos" route="/my-info" />
+                <SidebarItem icon={<FaExchangeAlt size={20} />} text="Cambiar" route="/dashboard" />
+                <SidebarItem icon={<FaListAlt size={20} />} text="Ordenes" route="/dashboard/orders" />
+                <SidebarItem icon={<FaWallet  size={20} />} text="Cuentas" route="/dashboard/accounts" />
+                <SidebarItem icon={<FaUser  size={20} />} text="Datos" route="/dashboard/my-info" />
                 <SidebarItem icon={<LogOut  size={20} />} text="Logout" route="https://google.com" />
             </Sidebar>
             <div

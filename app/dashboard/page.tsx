@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { TiTick } from "react-icons/ti";
 import { FaMoneyBillWave, FaPercent, FaPiggyBank } from "react-icons/fa";
 import {
-  Autocomplete,
   Box,
   Button,
   FormControl,

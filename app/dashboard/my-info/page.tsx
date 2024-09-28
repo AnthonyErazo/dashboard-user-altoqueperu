@@ -76,14 +76,6 @@ export default function MyInfo() {
             />
           </div>
         </div>
-
-        <div className="flex justify-end mt-4">
-          <button
-            className="bg-indigo-600 text-white py-3 px-6 rounded-lg text-lg hover:bg-indigo-700 shadow-md"
-          >
-            Guardar
-          </button>
-        </div>
       </div>
 
       <DocumentUpload />

@@ -215,7 +215,7 @@ const Header = ({ steps, currentStep, handlePrev, handleNext, canFinish, handleF
 // Step Progress Indicator
 const StepProgress = ({ steps, currentStep }: { steps: string[], currentStep: number }) => (
   <div className="flex text-gray-700">
-    {steps.map((step: any, i: number) => (
+    {steps.map((step: string, i: number) => (
       <div key={i} className="mx-4 flex flex-col items-center">
         <motion.div
           initial={{ scale: 0.9 }}

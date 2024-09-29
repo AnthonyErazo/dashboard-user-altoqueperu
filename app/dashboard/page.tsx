@@ -13,6 +13,7 @@ import {
   MenuItem,
   OutlinedInput,
   Select,
+  SelectChangeEvent,
   TextField,
   Typography,
 } from "@mui/material";
@@ -64,7 +65,7 @@ export default function Home() {
   const [alertMessage, setAlertMessage] = useState("");
   const [typeAlert, setTypeAlert] = useState<"success" | "error" | "warning">("success");
   const [selectedAccount, setSelectedAccount] = useState("");
-  const [accounts, setAccounts] = useState<any[]>([]);
+  const [accounts, setAccounts] = useState<Account[]>([]);
   const [voucher, setVoucher] = useState<File | null>(null);
   const [voucherPreview, setVoucherPreview] = useState<string | null>(null);
 
@@ -108,12 +109,12 @@ export default function Home() {
     setAmountSent(parseFloat(e.target.value) || 0);
   };
 
-  const handleBankSelect = (event: any) => {
+  const handleBankSelect = (event: SelectChangeEvent<string>) => {
     const newValue = banks.find((bank) => bank.label === event.target.value);
     if (newValue) setSelectedBank(newValue);
   };
 
-  const handleAccountSelect = (event: any) => {
+  const handleAccountSelect = (event: SelectChangeEvent<string>) => {
     setSelectedAccount(event.target.value);
   };
 
@@ -187,7 +188,14 @@ export default function Home() {
 }
 
 // Header Component
-const Header = ({ steps, currentStep, handlePrev, handleNext, canFinish, handleFinish }: any) => (
+const Header = ({ steps, currentStep, handlePrev, handleNext, canFinish, handleFinish }: { 
+  steps: string[], 
+  currentStep: number, 
+  handlePrev: () => void, 
+  handleNext: () => void, 
+  canFinish: boolean, 
+  handleFinish: () => void 
+}) => (
   <div className="flex justify-around py-8 text-gray-700">
     <motion.div className="flex justify-between items-center" initial={{ opacity: 0, translateX: -30 }} animate={{ opacity: 1, translateX: 0 }} transition={{ duration: 0.5 }}>
       <Button variant="outlined" color="secondary" disabled={currentStep === 1} onClick={handlePrev}>
@@ -205,7 +213,7 @@ const Header = ({ steps, currentStep, handlePrev, handleNext, canFinish, handleF
 
 
 // Step Progress Indicator
-const StepProgress = ({ steps, currentStep }: any) => (
+const StepProgress = ({ steps, currentStep }: { steps: string[], currentStep: number }) => (
   <div className="flex text-gray-700">
     {steps.map((step: any, i: number) => (
       <div key={i} className="mx-4 flex flex-col items-center">
@@ -224,7 +232,16 @@ const StepProgress = ({ steps, currentStep }: any) => (
 );
 
 // Step 1 Component
-const Step1 = ({ amountSent, amountReceived, promoCode, setPromoCode, selectedBank, handleAmountChange, handleBankSelect, commission }: any) => (
+const Step1 = ({ amountSent, amountReceived, promoCode, setPromoCode, selectedBank, handleAmountChange, handleBankSelect, commission }: {
+  amountSent: number;
+  amountReceived: number;
+  promoCode: string;
+  setPromoCode: (code: string) => void;
+  selectedBank: Bank;
+  handleAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleBankSelect: (event: SelectChangeEvent<string>) => void;
+  commission: number;
+}) => (
   <div className="flex flex-col md:flex-row justify-between p-6 gap-6">
     <motion.div className="w-full md:w-2/3 bg-white p-6 rounded-lg shadow-lg" initial={{ opacity: 0, translateX: -30 }} animate={{ opacity: 1, translateX: 0 }} transition={{ duration: 0.8 }}>
       <h2 className="text-2xl font-bold mb-6 text-gray-800">Cotiza el tipo de cambio</h2>
@@ -248,7 +265,15 @@ const Step1 = ({ amountSent, amountReceived, promoCode, setPromoCode, selectedBa
 );
 
 // Step 2 Component
-const Step2 = ({ selectedBank, amountSent, amountReceived, commission, selectedAccount, handleAccountSelect, accounts }: any) => (
+const Step2 = ({ selectedBank, amountSent, amountReceived, commission, selectedAccount, handleAccountSelect, accounts }: {
+  selectedBank: Bank;
+  amountSent: number;
+  amountReceived: number;
+  commission: number;
+  selectedAccount: string;
+  handleAccountSelect: (event: SelectChangeEvent<string>) => void;
+  accounts: Account[];
+}) => (
   <div className="flex flex-col md:flex-row justify-between p-6 gap-6">
     <motion.div
       className="w-full bg-white p-6 rounded-lg shadow-lg"
@@ -293,7 +318,11 @@ const Step2 = ({ selectedBank, amountSent, amountReceived, commission, selectedA
 );
 
 // Step 3 Component
-const Step3 = ({ selectedBank, handleVoucherChange, voucherPreview }: any) => (
+const Step3 = ({ selectedBank, handleVoucherChange, voucherPreview }: {
+  selectedBank: Bank;
+  handleVoucherChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  voucherPreview: string | null;
+}) => (
   <div className="flex flex-col xl:flex-row max-xl:items-center p-6 gap-6">
     <motion.div
       className="xl:max-w-[55vh] max-xl:min-w-[55vh] md:w-1/2 bg-white p-6 rounded-lg shadow-lg"
@@ -329,7 +358,11 @@ const Step3 = ({ selectedBank, handleVoucherChange, voucherPreview }: any) => (
 
 
 // Summary Component
-const Summary = ({ selectedBank, commission, amountReceived }: any) => (
+const Summary = ({ selectedBank, commission, amountReceived }: {
+  selectedBank: Bank;
+  commission: number;
+  amountReceived: number;
+}) => (
   <motion.div className="w-full md:w-1/3 bg-white p-6 rounded-lg shadow-lg" initial={{ opacity: 0, translateX: 30 }} animate={{ opacity: 1, translateX: 0 }} transition={{ duration: 0.8 }}>
     <Typography variant="h6" gutterBottom>Detalles del Banco y Comisión</Typography>
     {selectedBank ? (

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import {
-  Box, Typography, Button, TextField, Select, MenuItem,
+  Box, Typography, Button, TextField, MenuItem,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
   IconButton, InputAdornment, Dialog, DialogActions, DialogContent, DialogTitle, Grid
 } from '@mui/material';
@@ -11,7 +11,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import { Account } from '@/app/models/Account';
-import { addAccountToAPI, deleteAccountFromAPI, getAccountsFromAPI } from './api/accountApi'; // Simulación de API
+import { addAccountToAPI, deleteAccountFromAPI, getAccountsFromAPI } from './api/accountApi';
 
 const banksList = ['BCP', 'Scotiabank', 'BanBif', 'BBVA', 'Interbank'];
 

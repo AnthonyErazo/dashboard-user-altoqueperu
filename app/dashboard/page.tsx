@@ -61,9 +61,10 @@ export default function Home() {
   const [commission, setCommission] = useState(0);
   const [currentStep, setCurrentStep] = useState(1);
   const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [typeAlert, setTypeAlert] = useState<"success" | "error" | "warning">("success");
   const [selectedAccount, setSelectedAccount] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [accounts, setAccounts] = useState<any[]>([]);
   const [voucher, setVoucher] = useState<File | null>(null);
   const [voucherPreview, setVoucherPreview] = useState<string | null>(null);
 
@@ -85,14 +86,16 @@ export default function Home() {
 
   const handleNext = () => {
     if (currentStep === 2 && !selectedAccount) {
-      setErrorMessage("Debes seleccionar una cuenta de banco.");
+      setAlertMessage("Debes seleccionar una cuenta de banco.");
       setShowAlert(true);
+      setTypeAlert("error");
       return;
     }
-    if(amountSent<20){
-      setErrorMessage("El monto recibido no puede ser menor a S/20.");
+    if (amountSent < 20) {
+      setAlertMessage("El monto recibido no puede ser menor a S/20.");
       setShowAlert(true);
-      return 
+      setTypeAlert("error");
+      return;
     }
     if (currentStep < 3) setCurrentStep(currentStep + 1);
   };
@@ -125,11 +128,25 @@ export default function Home() {
       reader.readAsDataURL(file);
     }
   };
+  const handleFinish = () => {
+    setAlertMessage("Proceso exitoso. Volviendo al inicio.");
+    setTypeAlert("success");
+    setShowAlert(true);
+    setTimeout(() => {
+      setCurrentStep(1);
+      setVoucher(null);
+      setVoucherPreview(null);
+      setSelectedAccount("");
+      setAmountSent(0);
+      setPromoCode('');
+      setShowAlert(false);
+    }, 2000);
+  };
   return (
     <div className="h-[100vh] flex flex-col justify-between">
-      {showAlert && <Alert message={errorMessage} type="error" />}
+      {showAlert && <Alert message={alertMessage} type={typeAlert} />}
 
-      <Header steps={steps} currentStep={currentStep} handlePrev={handlePrev} handleNext={handleNext} />
+      <Header steps={steps} currentStep={currentStep} handlePrev={handlePrev} handleNext={handleNext} canFinish={!!voucher} handleFinish={handleFinish} />
 
       <motion.div key={currentStep} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="flex flex-col items-center justify-center h-full w-full px-4">
         <div className="flex flex-col justify-between">
@@ -159,7 +176,6 @@ export default function Home() {
           {currentStep === 3 && (
             <Step3
               selectedBank={selectedBank}
-              voucher={voucher}
               handleVoucherChange={handleVoucherChange}
               voucherPreview={voucherPreview}
             />
@@ -171,7 +187,7 @@ export default function Home() {
 }
 
 // Header Component
-const Header = ({ steps, currentStep, handlePrev, handleNext }: any) => (
+const Header = ({ steps, currentStep, handlePrev, handleNext, canFinish, handleFinish }: any) => (
   <div className="flex justify-around py-8 text-gray-700">
     <motion.div className="flex justify-between items-center" initial={{ opacity: 0, translateX: -30 }} animate={{ opacity: 1, translateX: 0 }} transition={{ duration: 0.5 }}>
       <Button variant="outlined" color="secondary" disabled={currentStep === 1} onClick={handlePrev}>
@@ -180,12 +196,13 @@ const Header = ({ steps, currentStep, handlePrev, handleNext }: any) => (
     </motion.div>
     <StepProgress steps={steps} currentStep={currentStep} />
     <motion.div className="flex justify-between items-center text-gray-800" initial={{ opacity: 0, translateX: 30 }} animate={{ opacity: 1, translateX: 0 }} transition={{ duration: 0.5 }}>
-      <Button variant="contained" color="primary" onClick={handleNext} disabled={currentStep === steps.length}>
+      <Button variant="contained" color="primary" onClick={currentStep === steps.length ? handleFinish : handleNext} disabled={currentStep === steps.length && !canFinish}>
         {currentStep === steps.length ? "Finalizar" : "Siguiente"}
       </Button>
     </motion.div>
   </div>
 );
+
 
 // Step Progress Indicator
 const StepProgress = ({ steps, currentStep }: any) => (
@@ -276,7 +293,7 @@ const Step2 = ({ selectedBank, amountSent, amountReceived, commission, selectedA
 );
 
 // Step 3 Component
-const Step3 = ({ selectedBank, voucher, handleVoucherChange, voucherPreview }: any) => (
+const Step3 = ({ selectedBank, handleVoucherChange, voucherPreview }: any) => (
   <div className="flex flex-col xl:flex-row max-xl:items-center p-6 gap-6">
     <motion.div
       className="xl:max-w-[55vh] max-xl:min-w-[55vh] md:w-1/2 bg-white p-6 rounded-lg shadow-lg"
@@ -296,18 +313,20 @@ const Step3 = ({ selectedBank, voucher, handleVoucherChange, voucherPreview }: a
       <Typography variant="h6" gutterBottom className="text-gray-800 text-center">Sube tu Voucher</Typography>
       <Box className="mb-6 w-full h-full content-center border border-dashed border-gray-300 p-4 rounded-lg bg-gray-50 relative">
         <input type="file" onChange={handleVoucherChange} className="opacity-0 absolute inset-0 cursor-pointer" />
-        <Typography variant="body1" className="text-center">Sube tu archivo</Typography>
-        <Typography variant="body1" className="text-gray-500 text-center">Formato admitido: PNG, JPG o PDF</Typography>
+        {voucherPreview ? (
+          <Image width={20} height={20} src={voucherPreview} alt="Voucher Preview" className="w-full h-auto rounded-lg shadow-md" />
+        ) : (
+          <>
+            <Typography variant="body1" className="text-center">Sube tu archivo</Typography>
+            <Typography variant="body1" className="text-gray-500 text-center">Formato admitido: PNG, JPG o PDF</Typography>
+          </>
+        )}
       </Box>
-      {voucherPreview && (
-        <Box className="mb-6">
-          <Typography variant="h6" className="text-gray-700 text-center mb-2">Previsualización del Voucher</Typography>
-          <img src={voucherPreview} alt="Voucher Preview" className="w-full h-auto rounded-lg shadow-md" />
-        </Box>
-      )}
     </motion.div>
   </div>
 );
+
+
 
 // Summary Component
 const Summary = ({ selectedBank, commission, amountReceived }: any) => (

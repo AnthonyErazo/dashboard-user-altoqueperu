@@ -2,16 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { FaCloudUploadAlt } from 'react-icons/fa';
+import Image from 'next/image';
 
-const MAX_SIZE_MB = 20; // Tamaño máximo del archivo
+const MAX_SIZE_MB = 20;
 
-// Validación del archivo (tipo y tamaño)
 const isValidFile = (file) => {
   const validTypes = ['image/jpeg', 'image/png'];
-  return validTypes.includes(file.type) && file.size <= MAX_SIZE_MB * 1024 * 1024; // Convertir MB a bytes
+  return validTypes.includes(file.type) && file.size <= MAX_SIZE_MB * 1024 * 1024;
 };
 
-// Convertir archivo a Base64
 const toBase64 = (file) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -25,7 +24,6 @@ export default function Step1DNI({ nextStep, onCompletion, initialData }) {
   const [dniBack, setDniBack] = useState(initialData.dniBack || '');
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Cargar las imágenes guardadas en localStorage al iniciar el componente
   useEffect(() => {
     const savedDniFront = localStorage.getItem('dniFront');
     const savedDniBack = localStorage.getItem('dniBack');
@@ -39,7 +37,7 @@ export default function Step1DNI({ nextStep, onCompletion, initialData }) {
       if (isValidFile(file)) {
         const base64Image = await toBase64(file);
         setDni(base64Image);
-        localStorage.setItem(storageKey, base64Image); // Guardar en localStorage
+        localStorage.setItem(storageKey, base64Image);
         setErrorMessage('');
       } else {
         setErrorMessage('Solo se permiten imágenes JPEG o PNG de hasta 20MB.');
@@ -52,8 +50,8 @@ export default function Step1DNI({ nextStep, onCompletion, initialData }) {
       setErrorMessage('Debe subir ambas fotos del DNI: frontal y posterior.');
       return;
     }
-    onCompletion({ dniFront, dniBack }); // Pasar los datos al estado global
-    nextStep(); // Avanzar al siguiente paso
+    onCompletion({ dniFront, dniBack });
+    nextStep();
   };
 
   return (
@@ -89,12 +87,13 @@ export default function Step1DNI({ nextStep, onCompletion, initialData }) {
           </span>
           <div className="w-full h-64 bg-gray-200 rounded-lg border overflow-hidden">
             {dniFront ? (
-              <img src={dniFront} alt="DNI Frontal" className="w-full h-full object-contain" />
+              <Image src={dniFront} alt="DNI Frontal" layout="fill" objectFit="contain" />
             ) : (
-              <img
+              <Image
                 src="/img/dni-frontal.jpg"
                 alt="Ejemplo de DNI Frontal"
-                className="w-full h-full object-contain"
+                layout="fill"
+                objectFit="contain"
               />
             )}
           </div>
@@ -126,12 +125,13 @@ export default function Step1DNI({ nextStep, onCompletion, initialData }) {
           </span>
           <div className="w-full h-64 bg-gray-200 rounded-lg border overflow-hidden">
             {dniBack ? (
-              <img src={dniBack} alt="DNI Posterior" className="w-full h-full object-contain" />
+              <Image src={dniBack} alt="DNI Posterior" layout="fill" objectFit="contain" />
             ) : (
-              <img
+              <Image
                 src="/img/dni-reverso.jpg"
                 alt="Ejemplo de DNI Posterior"
-                className="w-full h-full object-contain"
+                layout="fill"
+                objectFit="contain"
               />
             )}
           </div>

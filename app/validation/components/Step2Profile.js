@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { FaCloudUploadAlt } from 'react-icons/fa';
+import Image from 'next/image';
 
 const MAX_SIZE_MB = 20;
 
@@ -85,12 +86,18 @@ export default function Step2Profile({ nextStep, prevStep, onCompletion, initial
 
         <div className="w-full h-64 bg-gray-200 rounded-lg border border-gray-300 overflow-hidden mb-4">
           {profileDNI ? (
-            <img src={profileDNI} alt="Foto de perfil con DNI" className="w-full h-full object-contain" />
+            <Image
+              src={profileDNI}
+              alt="Foto de perfil con DNI"
+              layout="fill"
+              objectFit="contain"
+            />
           ) : (
-            <img
+            <Image
               src="/img/selfie-dni.jpg"
               alt="Ejemplo de foto de perfil con DNI"
-              className="w-full h-full object-contain"
+              layout="fill"
+              objectFit="contain"
             />
           )}
         </div>

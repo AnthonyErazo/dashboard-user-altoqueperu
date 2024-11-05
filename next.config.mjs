@@ -1,9 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        domains: ['static.wixstatic.com','via.placeholder.com'],
+      domains: ['static.wixstatic.com', 'via.placeholder.com'],
     },
-    trailingSlash: true
-};
-
-export default nextConfig;
+    output: 'export',
+    trailingSlash: true,
+    skipTrailingSlashRedirect: true,
+  };
+  
+  export default nextConfig;  

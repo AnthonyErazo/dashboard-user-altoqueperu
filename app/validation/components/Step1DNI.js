@@ -1,105 +1,156 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaCloudUploadAlt } from 'react-icons/fa';
 
-const MAX_SIZE_MB = 5;
+const MAX_SIZE_MB = 20; // Tamaño máximo del archivo
 
+// Validación del archivo (tipo y tamaño)
 const isValidFile = (file) => {
   const validTypes = ['image/jpeg', 'image/png'];
-  const isValidType = validTypes.includes(file.type);
-  const isValidSize = file.size <= MAX_SIZE_MB * 1024 * 1024; // Convertir MB a bytes
-  return isValidType && isValidSize;
+  return validTypes.includes(file.type) && file.size <= MAX_SIZE_MB * 1024 * 1024; // Convertir MB a bytes
 };
+
+// Convertir archivo a Base64
+const toBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
 
 export default function Step1DNI({ nextStep, onCompletion, initialData }) {
   const [dniFront, setDniFront] = useState(initialData.dniFront || '');
   const [dniBack, setDniBack] = useState(initialData.dniBack || '');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleFileChange = (setDni) => (e) => {
-    const file = e.target.files[0];
+  // Cargar las imágenes guardadas en localStorage al iniciar el componente
+  useEffect(() => {
+    const savedDniFront = localStorage.getItem('dniFront');
+    const savedDniBack = localStorage.getItem('dniBack');
+    if (savedDniFront) setDniFront(savedDniFront);
+    if (savedDniBack) setDniBack(savedDniBack);
+  }, []);
+
+  const handleFileChange = (setDni, storageKey) => async (e) => {
+    const file = e.target.files?.[0];
     if (file) {
       if (isValidFile(file)) {
-        setDni(URL.createObjectURL(file));
-        setErrorMessage(''); // Limpiar mensaje de error
+        const base64Image = await toBase64(file);
+        setDni(base64Image);
+        localStorage.setItem(storageKey, base64Image); // Guardar en localStorage
+        setErrorMessage('');
       } else {
-        setErrorMessage('Solo se permiten imágenes JPEG o PNG de hasta 5MB.');
+        setErrorMessage('Solo se permiten imágenes JPEG o PNG de hasta 20MB.');
       }
     }
   };
 
   const handleNext = () => {
-    if (dniFront && dniBack) {
-      onCompletion({ dniFront, dniBack });
-      nextStep();
-    } else {
+    if (!dniFront || !dniBack) {
       setErrorMessage('Debe subir ambas fotos del DNI: frontal y posterior.');
+      return;
     }
+    onCompletion({ dniFront, dniBack }); // Pasar los datos al estado global
+    nextStep(); // Avanzar al siguiente paso
   };
 
   return (
-    <div className="flex flex-col items-center p-8 bg-gray-50 rounded-lg shadow-lg border border-gray-200">
-      <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">Sube las fotos de tu DNI</h2>
-      <div className="flex flex-col md:flex-row w-full max-w-6xl gap-8">
-        {/* Sección para la foto frontal */}
-        <div className="flex-1 bg-white p-6 rounded-lg border border-gray-300 shadow-md">
-          <div className="flex items-center mb-4">
-            <h3 className="text-lg font-medium text-gray-700">Foto del lado frontal</h3>
-          </div>
-          <div className="flex items-center mb-4">
-            <p className="text-gray-600 text-sm">Adjunta aquí la imagen del lado frontal de tu DNI.</p>
-            <label htmlFor="dniFront" className="cursor-pointer ml-4 flex items-center">
-              <FaCloudUploadAlt className="text-2xl text-blue-500" />
+    <div className="flex flex-col items-center p-8 bg-transparent-50 min-h-screen">
+      <h2 className="text-3xl font-semibold mb-8 text-center text-gray-800">
+        Sube las fotos de tu DNI
+      </h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-6xl">
+        {/* Foto Frontal */}
+        <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-300">
+          <h3 className="text-xl font-medium text-gray-700 mb-4">
+            Foto del lado frontal
+          </h3>
+          <div className="flex items-center mb-6">
+            <p className="text-gray-600 text-sm mr-2">
+              Adjunta aquí la imagen del lado frontal de tu DNI.
+            </p>
+            <label htmlFor="dniFront" className="cursor-pointer">
+              <FaCloudUploadAlt className="text-3xl text-blue-500" />
             </label>
           </div>
           <input
             type="file"
             accept="image/*"
-            onChange={handleFileChange(setDniFront)}
+            onChange={handleFileChange(setDniFront, 'dniFront')}
             className="hidden"
             id="dniFront"
+            aria-describedby="dniFrontDescription"
           />
-          <div className="relative w-full h-64 bg-gray-200 rounded-lg border border-gray-300 overflow-hidden">
+          <span id="dniFrontDescription" className="sr-only">
+            Sube la imagen del lado frontal de tu DNI
+          </span>
+          <div className="w-full h-64 bg-gray-200 rounded-lg border overflow-hidden">
             {dniFront ? (
-              <img src={dniFront} alt="DNI Front" className="w-full h-full object-cover" />
+              <img src={dniFront} alt="DNI Frontal" className="w-full h-full object-contain" />
             ) : (
-              <img src="https://via.placeholder.com/400x250?text=Foto+Frontal" alt="DNI Frontal Example" className="w-full h-full object-cover" />
+              <img
+                src="/img/dni-frontal.jpg"
+                alt="Ejemplo de DNI Frontal"
+                className="w-full h-full object-contain"
+              />
             )}
           </div>
         </div>
 
-        {/* Sección para la foto posterior */}
-        <div className="flex-1 bg-white p-6 rounded-lg border border-gray-300 shadow-md">
-          <div className="flex items-center mb-4">
-            <h3 className="text-lg font-medium text-gray-700">Foto del lado posterior</h3>
-          </div>
-          <div className="flex items-center mb-4">
-            <p className="text-gray-600 text-sm">Adjunta aquí la imagen del lado posterior de tu DNI.</p>
-            <label htmlFor="dniBack" className="cursor-pointer ml-4 flex items-center">
-              <FaCloudUploadAlt className="text-2xl text-blue-500" />
+        {/* Foto Posterior */}
+        <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-300">
+          <h3 className="text-xl font-medium text-gray-700 mb-4">
+            Foto del lado posterior
+          </h3>
+          <div className="flex items-center mb-6">
+            <p className="text-gray-600 text-sm mr-2">
+              Adjunta aquí la imagen del lado posterior de tu DNI.
+            </p>
+            <label htmlFor="dniBack" className="cursor-pointer">
+              <FaCloudUploadAlt className="text-3xl text-blue-500" />
             </label>
           </div>
           <input
             type="file"
             accept="image/*"
-            onChange={handleFileChange(setDniBack)}
+            onChange={handleFileChange(setDniBack, 'dniBack')}
             className="hidden"
             id="dniBack"
+            aria-describedby="dniBackDescription"
           />
-          <div className="relative w-full h-64 bg-gray-200 rounded-lg border border-gray-300 overflow-hidden">
+          <span id="dniBackDescription" className="sr-only">
+            Sube la imagen del lado posterior de tu DNI
+          </span>
+          <div className="w-full h-64 bg-gray-200 rounded-lg border overflow-hidden">
             {dniBack ? (
-              <img src={dniBack} alt="DNI Back" className="w-full h-full object-cover" />
+              <img src={dniBack} alt="DNI Posterior" className="w-full h-full object-contain" />
             ) : (
-              <img src="https://via.placeholder.com/400x250?text=Foto+Posterior" alt="DNI Posterior Example" className="w-full h-full object-cover" />
+              <img
+                src="/img/dni-reverso.jpg"
+                alt="Ejemplo de DNI Posterior"
+                className="w-full h-full object-contain"
+              />
             )}
           </div>
         </div>
       </div>
-      {errorMessage && <p className="text-red-500 mt-4 text-center text-sm">{errorMessage}</p>}
+
+      {errorMessage && (
+        <p className="text-red-500 mt-4 text-center text-sm">{errorMessage}</p>
+      )}
+
       <button
         onClick={handleNext}
-        className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors"
+        disabled={!dniFront || !dniBack}
+        className={`mt-8 px-10 py-4 rounded-lg text-white font-semibold transition-colors ${
+          dniFront && dniBack
+            ? 'bg-blue-600 hover:bg-blue-700'
+            : 'bg-gray-400 cursor-not-allowed'
+        }`}
+        aria-label="Siguiente paso"
       >
         Siguiente
       </button>

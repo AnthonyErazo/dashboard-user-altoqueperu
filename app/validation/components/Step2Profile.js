@@ -1,80 +1,120 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaCloudUploadAlt } from 'react-icons/fa';
 
+const MAX_SIZE_MB = 20;
+
+const isValidFileType = (file) => {
+  const validTypes = ['image/jpeg', 'image/png'];
+  return validTypes.includes(file.type) && file.size <= MAX_SIZE_MB * 1024 * 1024;
+};
+
+// Convertir archivo a Base64
+const toBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+
 export default function Step2Profile({ nextStep, prevStep, onCompletion, initialData }) {
-  const [profileDNI, setProfileDNI] = useState(initialData.profileDNI || '');
+  const [profileDNI, setProfileDNI] = useState(initialData?.profileDNI || '');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleFileChange = (e) => {
+  useEffect(() => {
+    const savedProfileDNI = localStorage.getItem('profileDNI');
+    if (savedProfileDNI) setProfileDNI(savedProfileDNI);
+    else if (initialData?.profileDNI) setProfileDNI(initialData.profileDNI);
+  }, [initialData]);
+
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      setProfileDNI(URL.createObjectURL(file));
-      setErrorMessage(''); // Limpiar mensaje de error al seleccionar una imagen válida
+      if (!isValidFileType(file)) {
+        setErrorMessage('Solo se permiten imágenes JPEG o PNG de hasta 20MB.');
+        return;
+      }
+      try {
+        const base64Image = await toBase64(file);
+        setProfileDNI(base64Image);
+        localStorage.setItem('profileDNI', base64Image);
+        setErrorMessage('');
+      } catch {
+        setErrorMessage('Error al procesar la imagen. Inténtalo de nuevo.');
+      }
     }
   };
 
   const handleNext = () => {
-    if (profileDNI) {
-      onCompletion({ profileDNI });
-      nextStep();
-    } else {
+    if (!profileDNI) {
       setErrorMessage('Por favor, sube una foto de perfil con tu DNI en mano.');
+      return;
     }
+    onCompletion({ profileDNI });
+    nextStep();
   };
 
   return (
-    <div className="flex flex-col items-center p-8 bg-gray-50 rounded-lg shadow-lg border border-gray-200">
-      <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">Sube una foto de perfil con tu DNI en mano</h2>
-
-      {/* Caja de carga de imagen similar al Paso 1 */}
-      <div className="flex flex-col md:flex-row w-full max-w-6xl gap-8">
-        <div className="flex-1 bg-white p-6 rounded-lg border border-gray-300 shadow-md">
-          <div className="flex items-center mb-4">
-            <h3 className="text-lg font-medium text-gray-700">Foto de perfil con DNI</h3>
-          </div>
-          <div className="flex items-center mb-4">
-            <p className="text-gray-600 text-sm">Adjunta aquí tu foto de perfil mostrando tu DNI en mano.</p>
-            <label htmlFor="profileDNI" className="cursor-pointer ml-4 flex items-center">
-              <FaCloudUploadAlt className="text-2xl text-blue-500" />
-            </label>
-          </div>
+    <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-transparent">
+      <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800">
+          Foto de perfil con DNI
+        </h2>
+        <div className="flex items-center justify-center mb-4">
+          <p className="text-gray-600 text-center mr-2">
+            Adjunta aquí la foto de perfil mostrando tu DNI en mano.
+          </p>
+          <label htmlFor="profileDNI" className="cursor-pointer flex items-center">
+            <FaCloudUploadAlt className="text-3xl text-blue-500" />
+            <span className="sr-only">Subir foto de perfil con DNI</span>
+          </label>
           <input
             type="file"
             accept="image/*"
             onChange={handleFileChange}
             className="hidden"
             id="profileDNI"
+            aria-describedby="profileDNI-description"
           />
-          <div className="relative w-full h-64 bg-gray-200 rounded-lg border border-gray-300 overflow-hidden">
-            {profileDNI ? (
-              <img src={profileDNI} alt="Profile with DNI" className="w-full h-full object-cover" />
-            ) : (
-              <img src="https://via.placeholder.com/400x250?text=Foto+Perfil" alt="Profile Example" className="w-full h-full object-cover" />
-            )}
-          </div>
+          <span id="profileDNI-description" className="sr-only">
+            Cargue una foto de perfil con su DNI en mano
+          </span>
         </div>
-      </div>
 
-      {/* Mensaje de error */}
-      {errorMessage && <p className="text-red-500 mt-4 text-center text-sm">{errorMessage}</p>}
+        <div className="w-full h-64 bg-gray-200 rounded-lg border border-gray-300 overflow-hidden mb-4">
+          {profileDNI ? (
+            <img src={profileDNI} alt="Foto de perfil con DNI" className="w-full h-full object-contain" />
+          ) : (
+            <img
+              src="/img/selfie-dni.jpg"
+              alt="Ejemplo de foto de perfil con DNI"
+              className="w-full h-full object-contain"
+            />
+          )}
+        </div>
 
-      {/* Botones de navegación */}
-      <div className="mt-6 flex justify-between w-full max-w-xl">
-        <button
-          onClick={prevStep}
-          className="px-6 py-3 bg-gray-300 text-gray-700 rounded-full hover:bg-gray-400 transition-colors"
-        >
-          Regresar
-        </button>
+        {errorMessage && (
+          <p className="text-red-500 mt-4 text-center text-sm">{errorMessage}</p>
+        )}
 
-        <button
-          onClick={handleNext}
-          className="px-6 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors"
-        >
-          Siguiente
-        </button>
+        <div className="flex justify-between mt-6">
+          <button
+            onClick={prevStep}
+            className="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
+            aria-label="Regresar al paso anterior"
+          >
+            Regresar
+          </button>
+          <button
+            onClick={handleNext}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            aria-label="Ir al siguiente paso"
+          >
+            Siguiente
+          </button>
+        </div>
       </div>
     </div>
   );

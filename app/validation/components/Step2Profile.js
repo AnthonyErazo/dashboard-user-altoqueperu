@@ -94,7 +94,7 @@ export default function Step2Profile({ nextStep, prevStep, onCompletion, initial
             />
           ) : (
             <Image
-              src="/img/selfie-dni.jpg"
+              src="/intranet/img/selfie-dni.jpg"
               alt="Ejemplo de foto de perfil con DNI"
               layout="fill"
               objectFit="contain"

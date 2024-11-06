@@ -24,7 +24,7 @@ export default function Step5Confirmation({ restart }) {
         {/* Imagen de confirmación optimizada */}
         <div className="flex justify-center mb-8">
           <Image
-            src="/img/confirmation.svg"
+            src="/intranet/img/confirmation.svg"
             alt="Ilustración de confirmación"
             width={192} // Ajusta el ancho (por ejemplo, 192px para 48 * 4)
             height={192} // Ajusta la altura según sea necesario

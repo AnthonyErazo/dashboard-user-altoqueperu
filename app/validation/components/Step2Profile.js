@@ -89,15 +89,15 @@ export default function Step2Profile({ nextStep, prevStep, onCompletion, initial
             <Image
               src={profileDNI}
               alt="Foto de perfil con DNI"
-              layout="fill"
-              objectFit="contain"
+              fill
+              style={{ objectFit: 'contain' }}
             />
           ) : (
             <Image
               src="/intranet/img/selfie-dni.jpg"
               alt="Ejemplo de foto de perfil con DNI"
-              layout="fill"
-              objectFit="contain"
+              fill
+              style={{ objectFit: 'contain' }}
             />
           )}
         </div>

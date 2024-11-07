@@ -113,9 +113,9 @@ export default function Step3CardUpload({ nextStep, prevStep, onCompletion }) {
 
             <div className="relative w-full h-48 bg-gray-200 rounded-lg border border-gray-300 overflow-hidden mb-4">
               {card.cardImage ? (
-                <Image src={card.cardImage} alt="Tarjeta" layout="fill" objectFit="contain" />
+                <Image src={card.cardImage} alt="Tarjeta" width={500} height={200} objectFit="contain" />
               ) : (
-                <Image src="/intranet/img/card.png" alt="Ejemplo de Tarjeta" layout="fill" objectFit="contain" />
+                <Image src="/intranet/img/card.png" alt="Ejemplo de Tarjeta" width={500} height={200} objectFit="contain" />
               )}
             </div>
 

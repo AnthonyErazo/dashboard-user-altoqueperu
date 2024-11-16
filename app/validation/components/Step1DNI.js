@@ -90,7 +90,7 @@ export default function Step1DNI({ nextStep, onCompletion, initialData }) {
               <Image src={dniFront} alt="DNI Frontal" fill style={{ objectFit: 'contain' }} />
             ) : (
               <Image
-                src="/img/dni-frontal.jpg"
+                src="/intranet/img/dni-frontal.jpg"
                 alt="Ejemplo de DNI Frontal"
                 fill
                 style={{ objectFit: 'contain' }}
@@ -128,7 +128,7 @@ export default function Step1DNI({ nextStep, onCompletion, initialData }) {
               <Image src={dniBack} alt="DNI Posterior" fill style={{ objectFit: 'contain' }} />
             ) : (
               <Image
-                src="/img/dni-reverso.jpg"
+                src="/intranet/img/dni-reverso.jpg"
                 alt="Ejemplo de DNI Posterior"
                 fill
                 style={{ objectFit: 'contain' }}

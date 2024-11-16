@@ -6,12 +6,11 @@ import Image from 'next/image';
 
 const MAX_SIZE_MB = 20;
 
-const isValidFileType = (file) => {
+const isValidFile = (file) => {
   const validTypes = ['image/jpeg', 'image/png'];
   return validTypes.includes(file.type) && file.size <= MAX_SIZE_MB * 1024 * 1024;
 };
 
-// Convertir archivo a Base64
 const toBase64 = (file) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -21,8 +20,8 @@ const toBase64 = (file) =>
   });
 
 export default function Step1DNI({ nextStep, onCompletion, initialData }) {
-  const [dniFront, setDniFront] = useState(initialData?.dniFront || '');
-  const [dniBack, setDniBack] = useState(initialData?.dniBack || '');
+  const [dniFront, setDniFront] = useState(initialData.dniFront || '');
+  const [dniBack, setDniBack] = useState(initialData.dniBack || '');
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
@@ -35,7 +34,7 @@ export default function Step1DNI({ nextStep, onCompletion, initialData }) {
   const handleFileChange = (setDni, storageKey) => async (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (isValidFileType(file)) {
+      if (isValidFile(file)) {
         const base64Image = await toBase64(file);
         setDni(base64Image);
         localStorage.setItem(storageKey, base64Image);
@@ -81,20 +80,19 @@ export default function Step1DNI({ nextStep, onCompletion, initialData }) {
             onChange={handleFileChange(setDniFront, 'dniFront')}
             className="hidden"
             id="dniFront"
+            aria-describedby="dniFrontDescription"
           />
+          <span id="dniFrontDescription" className="sr-only">
+            Sube la imagen del lado frontal de tu DNI
+          </span>
           <div className="w-full h-64 bg-gray-200 rounded-lg border overflow-hidden relative">
             {dniFront ? (
-              <Image
-                src={dniFront}
-                alt="DNI Frontal"
-                layout="fill"
-                style={{ objectFit: 'contain' }}
-              />
+              <Image src={dniFront} alt="DNI Frontal" fill style={{ objectFit: 'contain' }} />
             ) : (
               <Image
-                src="/intranet/img/dni-frontal.jpg"
+                src="/img/dni-frontal.jpg"
                 alt="Ejemplo de DNI Frontal"
-                layout="fill"
+                fill
                 style={{ objectFit: 'contain' }}
               />
             )}
@@ -120,20 +118,19 @@ export default function Step1DNI({ nextStep, onCompletion, initialData }) {
             onChange={handleFileChange(setDniBack, 'dniBack')}
             className="hidden"
             id="dniBack"
+            aria-describedby="dniBackDescription"
           />
+          <span id="dniBackDescription" className="sr-only">
+            Sube la imagen del lado posterior de tu DNI
+          </span>
           <div className="w-full h-64 bg-gray-200 rounded-lg border overflow-hidden relative">
             {dniBack ? (
-              <Image
-                src={dniBack}
-                alt="DNI Posterior"
-                layout="fill"
-                style={{ objectFit: 'contain' }}
-              />
+              <Image src={dniBack} alt="DNI Posterior" fill style={{ objectFit: 'contain' }} />
             ) : (
               <Image
-                src="/intranet/img/dni-reverso.jpg"
+                src="/img/dni-reverso.jpg"
                 alt="Ejemplo de DNI Posterior"
-                layout="fill"
+                fill
                 style={{ objectFit: 'contain' }}
               />
             )}
@@ -153,6 +150,7 @@ export default function Step1DNI({ nextStep, onCompletion, initialData }) {
             ? 'bg-blue-600 hover:bg-blue-700'
             : 'bg-gray-400 cursor-not-allowed'
         }`}
+        aria-label="Siguiente paso"
       >
         Siguiente
       </button>

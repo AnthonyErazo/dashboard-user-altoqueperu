@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { FaCloudUploadAlt, FaTrashAlt } from 'react-icons/fa';
-import Image from 'next/image';
+import Image from "next/legacy/image";
 
 const MAX_SIZE_MB = 20;
 const MAX_CARDS = 20;

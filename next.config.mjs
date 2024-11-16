@@ -2,7 +2,7 @@
 const nextConfig = {
   images: {
     domains: ['static.wixstatic.com', 'via.placeholder.com'],
-    unoptimized: true, // Desactiva la optimización de imágenes para permitir la exportación estática
+    unoptimized: true,
   },
   output: 'export',
   trailingSlash: true,

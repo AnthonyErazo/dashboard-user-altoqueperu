@@ -84,7 +84,7 @@ export default function Step2Profile({ nextStep, prevStep, onCompletion, initial
           </span>
         </div>
 
-        <div className="w-full h-64 bg-gray-200 rounded-lg border border-gray-300 overflow-hidden mb-4">
+        <div className="w-full h-64 bg-gray-200 rounded-lg border border-gray-300 overflow-hidden mb-4 relative">
           {profileDNI ? (
             <Image
               src={profileDNI}
@@ -94,7 +94,7 @@ export default function Step2Profile({ nextStep, prevStep, onCompletion, initial
             />
           ) : (
             <Image
-              src="/intranet/img/selfie-dni.jpg"
+              src="/img/selfie-dni.jpg"
               alt="Ejemplo de foto de perfil con DNI"
               fill
               style={{ objectFit: 'contain' }}

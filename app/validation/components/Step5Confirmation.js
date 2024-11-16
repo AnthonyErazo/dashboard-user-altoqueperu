@@ -1,7 +1,7 @@
 "use client";
 
 import { FaCheckCircle } from 'react-icons/fa';
-import Image from 'next/image';
+import Image from "next/legacy/image";
 
 export default function Step5Confirmation({ restart }) {
   return (

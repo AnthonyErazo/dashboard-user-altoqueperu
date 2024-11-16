@@ -17,7 +17,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import Alert from "./Components/Alert";
 import { getAccountsFromAPI } from "./accounts/api/accountApi";
 import { Account } from "../models/Account";

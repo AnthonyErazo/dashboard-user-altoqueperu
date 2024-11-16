@@ -3,7 +3,7 @@
 import { useContext, createContext, ReactNode, useState, useEffect } from "react";
 import { ChevronFirst, ChevronLast } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import Image from "next/image";
+import Image from "next/legacy/image";
 
 interface SidebarContextProps {
     expanded: boolean;

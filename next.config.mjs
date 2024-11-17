@@ -8,6 +8,7 @@ const nextConfig = {
   trailingSlash: true,
   skipTrailingSlashRedirect: true,
   basePath: '/intranet',
+  assetPrefix: '/intranet',
 };
 
 export default nextConfig;

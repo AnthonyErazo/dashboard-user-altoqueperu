@@ -44,15 +44,14 @@ export default function Sidebar({ children, expanded, setExpanded }: SidebarProp
             <aside className="md:h-[95vh] max-md:w-[100%] fixed md:shadow-xl md:top-1/2 max-md:bottom-0 md:p-0 md:rounded-3xl md:-translate-y-1/2 transform md:left-5 z-10">
                 <nav className="h-full flex flex-col bg-white md:border-r md:shadow-sm md:rounded-3xl">
                     <div className="p-4 pb-2 flex justify-between items-center max-md:hidden">
-                        <Image
+                        {expanded&&<Image
                             src="https://static.wixstatic.com/media/4ebc68_ab41a22907914fcc878695033a717c78~mv2.png/v1/crop/x_82,y_325,w_1507,h_250/fill/w_534,h_89,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/web%20portada.png"
-                            width={534}
-                            height={89}
+                            width={320}
+                            height={60}
                             priority
-                            className={`overflow-hidden transition-all ${expanded ? "w-40" : "w-0"
-                                }`}
+                            className={`overflow-hidden transition-all`}
                             alt="logo"
-                        />
+                        />}
                         {!isScreenSmall && (
                             <button
                                 onClick={() => setExpanded(!expanded)}

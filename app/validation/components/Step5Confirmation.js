@@ -18,7 +18,7 @@ export default function Step5Confirmation({ restart }) {
           ¡Ya está por finalizar!
         </h2>
         <p className="text-gray-600 mb-8">
-          Estamos terminando la validación de tu información. Pronto recibirás un correo de confirmación, ¡en solo 5 minutos!
+          Estamos terminando la validación de tu información. Pronto recibirás un correo de confirmación, ¡en solo 30 minutos!
         </p>
 
         {/* Imagen de confirmación optimizada */}

@@ -1,14 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: {
-    domains: ['static.wixstatic.com', 'via.placeholder.com'],
-    unoptimized: true,
-  },
   output: 'export',
-  trailingSlash: true,
-  skipTrailingSlashRedirect: true,
-  basePath: '/intranet',
-  assetPrefix: '/intranet',
+  trailingSlash: true, // Importante para las rutas estáticas
+  basePath: '/intranet', // Prefijo de las rutas
+  assetPrefix: '/intranet', // Prefijo para recursos estáticos
+  images: {
+    unoptimized: true, // Requerido para exportación estática
+  },
 };
 
 export default nextConfig;

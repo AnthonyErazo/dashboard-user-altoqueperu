@@ -1,7 +1,7 @@
 "use client";
 
 import { Typography } from "@mui/material";
-import { Check, CircleXIcon, Clock, TriangleAlert } from "lucide-react";
+import { Check, CircleXIcon, Clock } from "lucide-react";
 import { useState } from "react";
 
 export default function Orders() {

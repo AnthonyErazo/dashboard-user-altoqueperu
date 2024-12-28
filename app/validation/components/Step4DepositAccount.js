@@ -3,6 +3,34 @@
 import { useState } from 'react';
 import { FaTrash, FaPlus, FaUniversity, FaExclamationCircle } from 'react-icons/fa';
 
+// Función para enviar las cuentas de ahorro al servidor
+const saveAccountsToServer = async (accounts) => {
+  try {
+    const response = await fetch("https://altoqueperuwk.com/wp-admin/admin-ajax.php", {
+      method: "POST",
+      body: JSON.stringify({
+        action: "altoke_guardar_cuentas_ahorro", // Acción que se llama en el backend
+        accounts: accounts,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      credentials: 'include', // Incluye credenciales si es necesario
+    });
+
+    const result = await response.json();
+    
+    if (result.success) {
+      console.log("Cuentas de ahorro guardadas correctamente.");
+    } else {
+      console.error("Error al guardar las cuentas de ahorro: ", result.message);
+    }
+  } catch (error) {
+    console.error("Error en la solicitud AJAX: ", error);
+  }
+};
+
 export default function Step4DepositAccount({ finish, prevStep, onCompletion }) {
   const banks = [
     { name: "BCP", digits: 14 },
@@ -99,6 +127,7 @@ export default function Step4DepositAccount({ finish, prevStep, onCompletion }) 
       setErrorMessages(newErrorMessages);
     } else {
       setErrorMessages([]);
+      saveAccountsToServer(accounts); // Enviar cuentas de ahorro al backend
       onCompletion(accounts);
       finish();
     }

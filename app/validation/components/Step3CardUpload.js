@@ -4,13 +4,72 @@ import { useState, useEffect } from 'react';
 import { FaCloudUploadAlt, FaTrashAlt } from 'react-icons/fa';
 import Image from "next/legacy/image";
 
+// Limites de tamaño y cantidad de tarjetas
 const MAX_SIZE_MB = 20;
 const MAX_CARDS = 20;
 const banks = ['INTERBANK', 'BCP', 'BBVA', 'BanBif', 'Scotiabank'];
 
+// Función para validar el tipo de archivo
 const isValidFileType = (file) => {
   const validTypes = ['image/jpeg', 'image/png'];
   return validTypes.includes(file.type) && file.size <= MAX_SIZE_MB * 1024 * 1024;
+};
+
+// Función para enviar la imagen al servidor
+const uploadImageToServer = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append("action", "altoke_upload_image");
+    formData.append("image", file);
+
+    const response = await fetch("https://altoqueperuwk.com/wp-admin/admin-ajax.php", {
+      method: "POST",
+      body: formData,
+      credentials: "include", // Si necesitas autenticación, añade credenciales
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      console.log("Imagen cargada correctamente: ", result.data.url);
+      return result.data.url; // Retorna la URL de la imagen cargada
+    } else {
+      console.error("Error al cargar la imagen: ", result.data.message);
+    }
+  } catch (error) {
+    console.error("Error en la solicitud AJAX: ", error);
+  }
+};
+
+// Función para guardar las URLs de las tarjetas al usuario
+const saveCardUrls = async (cards) => {
+  try {
+    const formData = new FormData();
+    formData.append("action", "altoke_guardar_tarjeta_urls");
+
+    // Convertir el array de tarjetas en un string JSON
+    const cardsJson = JSON.stringify(cards);
+    formData.append("cards", cardsJson);
+
+    console.log("Enviando URLs de las tarjetas:", cardsJson); // Depuración
+
+    const response = await fetch("https://altoqueperuwk.com/wp-admin/admin-ajax.php", {
+      method: "POST",
+      body: formData,
+      credentials: "include",
+    });
+
+
+    const result = await response.json();
+
+    if (result.success) {
+      console.log("URLs de tarjetas guardadas correctamente");
+    } else {
+      console.error("Error al guardar las URLs de las tarjetas");
+    }
+  } catch (error) {
+    console.error("Error en la solicitud de guardar tarjetas: ", error);
+  }
 };
 
 export default function Step3CardUpload({ nextStep, prevStep, onCompletion }) {
@@ -30,27 +89,18 @@ export default function Step3CardUpload({ nextStep, prevStep, onCompletion }) {
     setErrorMessage('');
   };
 
-  const handleFileChange = (index, e) => {
+  const handleFileChange = async (index, e) => {
     const file = e.target.files[0];
     if (file && isValidFileType(file)) {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        const base64Image = reader.result;
-
-        // Evitar duplicados de imagen
-        if (cards.some((card) => card.cardImage === base64Image)) {
-          setErrorMessage('Esta imagen ya ha sido subida. Por favor, selecciona otra.');
-        } else {
-          const updatedCards = [...cards];
-          updatedCards[index].cardImage = base64Image;
-          setCards(updatedCards);
-          setErrorMessage('');
-        }
-      };
-      reader.onerror = () => {
+      try {
+        const imageUrl = await uploadImageToServer(file);
+        const updatedCards = [...cards];
+        updatedCards[index].cardImage = imageUrl;
+        setCards(updatedCards);
+        setErrorMessage('');
+      } catch (error) {
         setErrorMessage('Error al cargar la imagen. Inténtalo de nuevo.');
-      };
+      }
     } else {
       setErrorMessage('Solo se permiten imágenes JPEG o PNG de hasta 20MB.');
     }
@@ -79,6 +129,8 @@ export default function Step3CardUpload({ nextStep, prevStep, onCompletion }) {
     if (cards.some((card) => !card.cardImage)) {
       setErrorMessage('Debe subir una imagen para cada tarjeta.');
     } else {
+      // Guardar las URLs de las tarjetas en el backend asociado al usuario
+      saveCardUrls(cards);
       setErrorMessage('');
       onCompletion(cards);
       nextStep();

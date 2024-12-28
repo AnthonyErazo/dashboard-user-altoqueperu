@@ -19,6 +19,57 @@ const toBase64 = (file) =>
     reader.onerror = (error) => reject(error);
   });
 
+// Código para enviar la imagen a WordPress
+const uploadImageToServer = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append("action", "altoke_upload_image");
+    formData.append("image", file);
+
+    const response = await fetch("https://altoqueperuwk.com/wp-admin/admin-ajax.php", {
+      method: "POST",
+      body: formData,
+      credentials: "include", // Si necesitas autenticación, añade credenciales
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      console.log("Imagen cargada correctamente: ", result.data.url);
+      return result.data.url; // Retorna la URL de la imagen cargada
+    } else {
+      console.error("Error al cargar la imagen: ", result.data.message);
+    }
+  } catch (error) {
+    console.error("Error en la solicitud AJAX: ", error);
+  }
+};
+
+const saveDniUrls = async (dniFrontUrl, dniBackUrl) => {
+  try {
+    const formData = new FormData();
+    formData.append("action", "altoke_guardar_dni_urls");
+    formData.append("dniFrontUrl", dniFrontUrl);
+    formData.append("dniBackUrl", dniBackUrl);
+
+    const response = await fetch("https://altoqueperuwk.com/wp-admin/admin-ajax.php", {
+      method: "POST",
+      body: formData,
+      credentials: "include", // Si necesitas autenticación, añade credenciales
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      console.log("URLs de las imágenes guardadas correctamente.");
+    } else {
+      console.error("Error al guardar las URLs: ", result.data.message);
+    }
+  } catch (error) {
+    console.error("Error en la solicitud AJAX: ", error);
+  }
+};
+
 export default function Step1DNI({ nextStep, onCompletion, initialData }) {
   const [dniFront, setDniFront] = useState(initialData.dniFront || '');
   const [dniBack, setDniBack] = useState(initialData.dniBack || '');
@@ -39,6 +90,12 @@ export default function Step1DNI({ nextStep, onCompletion, initialData }) {
         setDni(base64Image);
         localStorage.setItem(storageKey, base64Image);
         setErrorMessage('');
+
+        // Enviar la imagen al servidor y obtener la URL
+        const imageUrl = await uploadImageToServer(file);
+        if (imageUrl) {
+          setDni(imageUrl); // Guardar la URL de la imagen cargada
+        }
       } else {
         setErrorMessage('Solo se permiten imágenes JPEG o PNG de hasta 20MB.');
       }
@@ -50,6 +107,10 @@ export default function Step1DNI({ nextStep, onCompletion, initialData }) {
       setErrorMessage('Debe subir ambas fotos del DNI: frontal y posterior.');
       return;
     }
+
+    // Guardar las URLs de las imágenes en el backend
+    saveDniUrls(dniFront, dniBack);
+    
     onCompletion({ dniFront, dniBack });
     nextStep();
   };

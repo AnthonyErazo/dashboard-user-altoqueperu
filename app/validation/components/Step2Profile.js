@@ -20,6 +20,57 @@ const toBase64 = (file) =>
     reader.onerror = (error) => reject(error);
   });
 
+// Código para enviar la imagen a WordPress
+const uploadImageToServer = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append("action", "altoke_upload_image");
+    formData.append("image", file);
+
+    const response = await fetch("https://altoqueperuwk.com/wp-admin/admin-ajax.php", {
+      method: "POST",
+      body: formData,
+      credentials: "include", // Si necesitas autenticación, añade credenciales
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      console.log("Imagen cargada correctamente: ", result.data.url);
+      return result.data.url; // Retorna la URL de la imagen cargada
+    } else {
+      console.error("Error al cargar la imagen: ", result.data.message);
+    }
+  } catch (error) {
+    console.error("Error en la solicitud AJAX: ", error);
+  }
+};
+
+// Guardar la imagen de perfil con DNI en los metadatos del usuario en WordPress
+const saveProfileImageToServer = async (imageUrl) => {
+  try {
+    const formData = new FormData();
+    formData.append("action", "altoke_guardar_perfil_dni");
+    formData.append("profileDNIUrl", imageUrl); // Enviar la URL de la imagen al backend
+
+    const response = await fetch("https://altoqueperuwk.com/wp-admin/admin-ajax.php", {
+      method: "POST",
+      body: formData,
+      credentials: "include",
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      console.log("Imagen de perfil con DNI guardada correctamente");
+    } else {
+      console.error("Error al guardar la imagen: ", result.data.message);
+    }
+  } catch (error) {
+    console.error("Error en la solicitud AJAX: ", error);
+  }
+};
+
 export default function Step2Profile({ nextStep, prevStep, onCompletion, initialData }) {
   const [profileDNI, setProfileDNI] = useState(initialData?.profileDNI || '');
   const [errorMessage, setErrorMessage] = useState('');
@@ -42,6 +93,14 @@ export default function Step2Profile({ nextStep, prevStep, onCompletion, initial
         setProfileDNI(base64Image);
         localStorage.setItem('profileDNI', base64Image);
         setErrorMessage('');
+
+        // Enviar la imagen al servidor y obtener la URL
+        const imageUrl = await uploadImageToServer(file);
+        if (imageUrl) {
+          setProfileDNI(imageUrl); // Guardar la URL de la imagen cargada
+          // Guardar la URL de la imagen en el backend (WordPress)
+          await saveProfileImageToServer(imageUrl);
+        }
       } catch {
         setErrorMessage('Error al procesar la imagen. Inténtalo de nuevo.');
       }

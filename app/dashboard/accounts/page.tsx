@@ -11,7 +11,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import { Account } from '@/app/models/Account';
-import { addAccountToAPI, deleteAccountFromAPI, getAccountsFromAPI } from './api/accountApi';
+import { addAccountToAPI, deleteAccountFromAPI, getAccountsFromAPI, getMessageFromAPI, sendMessageFromAPI } from './api/accountApi';
 
 const banksList = ['BCP', 'Scotiabank', 'BanBif', 'BBVA', 'Interbank'];
 
@@ -27,6 +27,18 @@ export default function Accounts() {
   useEffect(() => {
     const storedAccounts = getAccountsFromAPI();
     setAccounts(storedAccounts);
+  }, []);
+
+  useEffect(() => {
+    const fetchMessage = async () => {
+      const message = await getMessageFromAPI();
+      console.log(message);
+
+      const response = await sendMessageFromAPI();
+      console.log(response);
+    };
+    
+    fetchMessage();
   }, []);
 
   // Función para agregar una nueva cuenta
